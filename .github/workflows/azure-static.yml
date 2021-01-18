@@ -1,5 +1,5 @@
 name: Azure Static Web Apps CI/CD
-
+#
 on:
   push:
     branches:
@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Publish with dotnet
+        run: dotnet publish -c release 
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v0.0.1-preview
