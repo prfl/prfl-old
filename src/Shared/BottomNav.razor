@@ -1,0 +1,92 @@
+﻿@inject Services.StateContainer StateContainer
+@inject NavigationManager NavigationManager
+
+
+<div class="container-fluid">
+<div class="row place-buttom shadow-sm rounded text-center row-cols-5">
+    <div class="col">
+        <NavLink class="nav-link" href="@accountUrl" Match="NavLinkMatch.All">
+            <img src="@accountIcon" >
+        </NavLink>
+    </div>
+    <div class="col">
+        <NavLink class="nav-link" Match="NavLinkMatch.All" href="@linkUrl">
+            <img src="@linkIcon" >
+        </NavLink>
+    </div>
+    <div class="col">
+        <NavLink class="nav-link" Match="NavLinkMatch.All" href="@favoriteUrl">
+            <img src="@favoriteIcon" >
+        </NavLink>
+    </div>
+    <div class="col">
+        <NavLink class="nav-link" href="@projectUrl"  Match="NavLinkMatch.All">
+            <img src="@projectIcon" >
+        </NavLink>
+    </div>
+    <div class="col">
+        <NavLink class="nav-link" href="@videoUrl"  Match="NavLinkMatch.All">
+            <img src="@videoIcon" >
+        </NavLink>
+    </div>
+</div>
+    
+    @* <div class="col-2 mt-2 dropup">
+        <a data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="/assets/icons/menu.svg" >
+        </a>
+        <ul class="dropdown-menu" style = "width:1rem !important">
+            <NavLink class="nav-link" href="@videoUrl" Match="NavLinkMatch.All">
+                <img src="/assets/icons/video.svg" > Video
+            </NavLink>
+            <NavLink class="nav-link" href="@articleUrl" Match="NavLinkMatch.All">
+                <img src="/assets/icons/article.svg" > Article
+            </NavLink>
+            <NavLink class="nav-link" href="@postUrl" Match="NavLinkMatch.All">
+                <img src="/assets/icons/post.svg" > Post
+            </NavLink>
+        </ul>
+    </div> *@
+
+
+</div>
+
+@code {
+
+    private string favoriteUrl =>  StateContainer != null ? $"{StateContainer.Username}" : "";
+    private string accountUrl =>  StateContainer != null ? $"a/{StateContainer.Username}" : "";
+    private string linkUrl =>  StateContainer != null ? $"l/{StateContainer.Username}" : "";
+    private string projectUrl =>  StateContainer != null ? $"p/{StateContainer.Username}" : "";
+    private string articleUrl =>  StateContainer != null ? $"ar/{StateContainer.Username}" : "";
+    private string videoUrl =>  StateContainer != null ? $"v/{StateContainer.Username}" : "";
+    private string postUrl =>  StateContainer != null ? $"po/{StateContainer.Username}" : "";
+
+    private string favoriteIcon =>  StateContainer.FavoriteIconUrl != null ? $"{StateContainer.FavoriteIconUrl}" : "/assets/icons/star.svg";
+    private string accountIcon =>  StateContainer.AccountIconUrl != null ? $"{StateContainer.AccountIconUrl}" : "/assets/icons/account.svg";
+    private string linkIcon =>  StateContainer.LinkIconUrl != null ? $"{StateContainer.LinkIconUrl}" : "/assets/icons/link.svg";
+    private string projectIcon =>  StateContainer.ProjectIconUrl != null ? $"{StateContainer.ProjectIconUrl}" : "/assets/icons/kanban.svg";
+    private string videoIcon =>  StateContainer.VideoIconUrl != null ? $"{StateContainer.VideoIconUrl}" : "/assets/icons/video.svg";
+
+    //private string projectUrl { get; set; }
+    
+    /*private void GoTo(string link) {
+        NavigationManager.NavigateTo($"{link}/{StateContainer.Username}");
+    }*/
+
+    /*private string GetProjectLink() {
+        return $"p/{StateContainer.Username}";
+    }*/
+
+    /*protected override void OnInitialized() {
+        projectUrl = $"p/{StateContainer.GetProperty()}";
+    }*/
+
+
+    /*protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            projectUrl = $"p/{StateContainer.GetProperty()}";
+        }
+    }*/
+}

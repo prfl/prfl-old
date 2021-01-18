@@ -1,0 +1,62 @@
+@page "/Component1"
+@inject Services.VisitorState StateContainer
+@implements IDisposable
+@using Profile.Models
+@inject IJSRuntime JS;
+@using Microsoft.Extensions.Logging
+@inject ILogger<Component1> logger;
+
+<h1>Component 1</h1>
+
+@if(StateContainer.Visitor != null) {
+<p>Id: <b>@StateContainer.Visitor.VisitorId</b></p>
+<p>Date: <b>@StateContainer.Visitor.VisitedOn</b></p>
+<p>Key: <b>@StateContainer.Visitor.Key</b></p>
+<p>Page: <b>@StateContainer.Visitor.Page</b></p>
+}
+
+
+<p>
+    <button @onclick="ChangePropertyValue">Change GUID from Component 1</button>
+</p>
+
+
+@code {
+    private static Visitor Visitor { get; set;}
+    protected override void OnInitialized()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+
+    private async void ChangePropertyValue()
+    {
+        await StateContainer.SetVisitorAsync("component1");
+
+        var prfluid = await JS.InvokeAsync<string>("getprfluid", "prfl-deviceId");
+        logger.LogInformation(prfluid);
+
+        //await JS.InvokeVoidAsync("alert", $"{prfluid}");
+
+        if(String.IsNullOrEmpty(prfluid)) {
+            var text = await JS.InvokeAsync<string>("setprfluid", new 
+                { 
+                    key = StateContainer.Visitor.Key, 
+                    deviceId=StateContainer.Visitor.VisitorId, 
+                    createdOn=StateContainer.Visitor.VisitedOn, 
+                    page=StateContainer.Visitor.Page, 
+                } );
+        }
+        else {
+            var item = await JS.InvokeAsync<string>("getprfluid");
+            //logger.LogInformation(item);
+        }
+        
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+
+}

@@ -1,0 +1,69 @@
+@page "/po/{username}"
+@using Models
+@using Profile.Components
+@inject HttpClient client
+@inject Services.StateContainer StateContainer
+
+<Title Value="@username" />
+
+@if(Posts == null) {
+    <Loading />
+}
+else if(Posts.Length == 0) {
+    <div class="alert alert-info mt-3" role="alert">
+        The user does not have any posts yet.
+    </div>
+}
+else {
+    @foreach(var post in Posts) {
+        var modalId = GetModalId();
+        <div>
+            <LinkCard ModalId="@modalId" Url="@post.Url" Name="@post.Name" Description="@post.Description" IsFavorite="@post.IsFavorite" IconUrl="/assets/icons/post.svg"/>
+        </div>
+        
+    }
+}
+
+ 
+
+
+
+@code {
+    [Parameter] public string username { get; set; }
+    private Post[] Posts { get; set; }
+
+    private int Count = 1;
+
+    protected override async Task OnInitializedAsync() {
+        ChangePropertyValue();
+        ChangeIconValue();
+        Posts = await client.GetFromJsonAsync<Post[]>($"api/post/u/{username}");
+        StateContainer.OnChange += StateHasChanged;
+    }
+
+    private void ChangePropertyValue()
+    {
+        StateContainer.SetProperty(username);
+    }
+
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+    private void ChangeIconValue()
+    {
+        StateContainer.SetAccountIcon("/assets/icons/account.svg");
+        StateContainer.SetLinkIcon("/assets/icons/link-fill-ns.svg");
+        StateContainer.SetFavoriteIcon("/assets/icons/star.svg");
+        StateContainer.SetProjectIcon("/assets/icons/kanban.svg");
+        StateContainer.SetVideoIcon("/assets/icons/video.svg");
+    }
+
+    private string GetModalId()
+    {
+        var num = Count++;
+        return "modal" + num;
+    }
+}
