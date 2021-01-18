@@ -1,0 +1,50 @@
+@inject Services.VisitorState VisitorState
+@implements IDisposable
+@using Models.IP
+@using Profile.Models
+@inject IJSRuntime JS;
+@inject HttpClient client
+
+@code {
+    public View View { get; set; }
+    public GeoIP GeoIP { get; set; }
+    [Parameter] public string UserId { get; set; }
+    [Parameter] public string Page { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await VisitorState.SetVisitorAsync(Page);
+
+        if(VisitorState.VisitorIsNew) {
+
+          GeoIP = await client.GetFromJsonAsync<GeoIP>("https://json.geoiplookup.io/");
+
+          if(GeoIP != null) {
+            await client.PostAsJsonAsync("https://prfl-analytics.azurewebsites.net/api/view", CreateView());
+          }
+
+        }
+        VisitorState.OnChange += StateHasChanged;
+    }
+
+    private View CreateView() {
+        View = new View(){
+        ViewDateTime = DateTime.Now,
+        UserId = UserId,
+        PublicIP = GeoIP.IP,
+        CountryCode = GeoIP.Country_Code,
+        CountryName = GeoIP.Country_Name,
+        Region = GeoIP.Region,
+        District = GeoIP.District,
+        Longitude = GeoIP.Longitude,
+        Latitude = GeoIP.Latitude
+      };
+      return View;
+    }
+
+    public void Dispose()
+    {
+        VisitorState.OnChange -= StateHasChanged;
+    }
+}
